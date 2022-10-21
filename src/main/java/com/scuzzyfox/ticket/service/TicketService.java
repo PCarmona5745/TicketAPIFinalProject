@@ -28,5 +28,7 @@ public interface TicketService {
 
 	Ticket fetchTicket(Long ticketId);
 
+	List<Ticket> fetchTicketsByCategory(String categoryName);
+
 
 }

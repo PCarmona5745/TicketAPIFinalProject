@@ -55,6 +55,28 @@ public interface TicketController {
 	@ResponseStatus(code = HttpStatus.OK)
 	List<Ticket> fetchTicketsByUser(@Length(max = 15) String username);
 	
+	@Operation(summary = "Retrieve a list of comments on a ticket", description = "Returns the list of comments", responses = {
+			@ApiResponse(responseCode = "200", description = "the list of comments is returned", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Comment.class))),
+			@ApiResponse(responseCode = "400", description = "The request parameters are invalid", content = @Content(mediaType = "application/json")),
+			@ApiResponse(responseCode = "404", description = "No tickets were found with the given ID", content = @Content(mediaType = "application/json")),
+			@ApiResponse(responseCode = "500", description = "An unplanned error occured.", content = @Content(mediaType = "application/json")) }, parameters = {
+					@Parameter(name="ticketId", allowEmptyValue = false, required = false, description="The ticketId that you want to look at comments for.")})
+	
+	@GetMapping("/{ticketId}/comments")
+	@ResponseStatus(code = HttpStatus.OK)
+	List<Comment> fetchCommentsOnTicket(Long ticketId);
+	
+	@Operation(summary = "Retrieve a list of tickets belonging to a category", description = "Returns the list of tickets", responses = {
+			@ApiResponse(responseCode = "200", description = "the list of tickets is returned", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Comment.class))),
+			@ApiResponse(responseCode = "400", description = "The request parameters are invalid", content = @Content(mediaType = "application/json")),
+			@ApiResponse(responseCode = "404", description = "No categories were found with the given parameters", content = @Content(mediaType = "application/json")),
+			@ApiResponse(responseCode = "500", description = "An unplanned error occured.", content = @Content(mediaType = "application/json")) }, parameters = {
+					@Parameter(name="categoryName", allowEmptyValue = false, required = false, description="The category that you want")})
+	
+	@GetMapping("/category/{categoryName}")
+	@ResponseStatus(code = HttpStatus.OK)
+	List<Ticket> fetchTicketsByCategory(String categoryName);
+	
 	@Operation(summary = "Attach a category to an existing ticket", description = "Returns the updated ticket", responses = {
 			@ApiResponse(responseCode = "201", description = "the category attached is returned", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Category.class))),
 			@ApiResponse(responseCode = "400", description = "The request parameters are invalid", content = @Content(mediaType = "application/json")),
@@ -91,7 +113,7 @@ public interface TicketController {
 			@ApiResponse(responseCode = "404", description = "No ticket and was found", content = @Content(mediaType = "application/json")),
 			@ApiResponse(responseCode = "500", description = "An unplanned error occured.", content = @Content(mediaType = "application/json")) }, parameters = {
 					@Parameter(name="ticketId", allowEmptyValue = false, required = false, description="The ticketId that you want to update"),
-					@Parameter(name="status", allowEmptyValue = false, required = false, description="the status you want to put on the ticket")
+					@Parameter(name="status", allowEmptyValue = false, required = false, description="the status you want to put on the ticket(PENDING, ACTIVE, CLOSED, RESOLVED)",schema=@Schema(implementation = Status.class))
 					
 			})
 	
@@ -99,14 +121,6 @@ public interface TicketController {
 	@ResponseStatus(code = HttpStatus.CREATED)
 	Ticket changeTicketStatus(Long ticketId, Status status);
 	
-	@Operation(summary = "Retrieve a list of comments on a ticket", description = "Returns the list of comments", responses = {
-			@ApiResponse(responseCode = "200", description = "the list of comments is returned", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Comment.class))),
-			@ApiResponse(responseCode = "400", description = "The request parameters are invalid", content = @Content(mediaType = "application/json")),
-			@ApiResponse(responseCode = "404", description = "No tickets were found with the given ID", content = @Content(mediaType = "application/json")),
-			@ApiResponse(responseCode = "500", description = "An unplanned error occured.", content = @Content(mediaType = "application/json")) }, parameters = {
-					@Parameter(name="ticketId", allowEmptyValue = false, required = false, description="The ticketId that you want to look at comments for.")})
 	
-	@GetMapping("/{ticketId}/comments")
-	List<Comment> fetchCommentsOnTicket(Long ticketId);
 
 }

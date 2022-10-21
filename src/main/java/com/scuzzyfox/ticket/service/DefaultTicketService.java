@@ -117,6 +117,20 @@ public class DefaultTicketService implements TicketService {
 		
 		return ticketDao.editStatus(ticketId, status);
 	}
+
+
+	@Override
+	public List<Ticket> fetchTicketsByCategory(String categoryName) {
+		Category cat = categoryService.fetchCategory(categoryName).orElseThrow(()->new NoSuchElementException("Category "+categoryName+" could not be found"));
+		
+		List<Long> ticketIdList = ticketCategoryService.fetchTicketIdsByCategory(cat.getCategoryId());
+		
+		if (ticketIdList.isEmpty()) {
+			throw new NoSuchElementException("No tickets found under category="+categoryName);
+		}
+		
+		return ticketDao.fetchTicketsByIdList(ticketIdList);
+	}
 	
 	
 

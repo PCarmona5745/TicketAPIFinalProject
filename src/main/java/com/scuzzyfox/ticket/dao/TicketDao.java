@@ -22,4 +22,6 @@ public interface TicketDao {
 	void deleteTicket(Long ticketId);
 
 	Ticket editStatus(Long ticketId, Status status);
+
+	List<Ticket> fetchTicketsByIdList(List<Long> ticketIdList);
 }

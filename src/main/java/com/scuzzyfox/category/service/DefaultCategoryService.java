@@ -25,4 +25,9 @@ public class DefaultCategoryService implements CategoryService {
 		return catOpt.get();
 	}
 
+	@Override
+	public Optional<Category> fetchCategory(String categoryName) {
+		return categoryDao.fetchCategory(categoryName);
+	}
+
 }

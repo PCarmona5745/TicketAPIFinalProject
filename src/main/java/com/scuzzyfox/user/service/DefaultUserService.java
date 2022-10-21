@@ -25,11 +25,12 @@ public class DefaultUserService implements UserService {
 
 	@Autowired
 	private UserDao userDao;
-	
+
 	@Autowired
 	private CommentService commentService;
 
-	//this is causing a circular dependency, had to set allow circular dependencies to true to get code to compile
+	// this is causing a circular dependency, had to set allow circular dependencies
+	// to true to get code to compile
 	@Autowired
 	private TicketService ticketService;
 
@@ -44,17 +45,24 @@ public class DefaultUserService implements UserService {
 		return userDao.updateUsername(username, newUsername);
 	}
 
+	// -----------------------------------------------
+
 	@Override
 	public User deleteAUser(String username) {
 		User user = userDao.fetchUser(username).orElseThrow(
 				() -> new NoSuchElementException("Cannot delete user " + username + " as they do not exist."));
-		
-		//delete all comments by user
+
+		// delete all comments by user
 		commentService.deleteAllCommentsByUser(user.getUserId());
 		
-		
+		List<Ticket> tickets = new LinkedList<>();
+
 //delete all tickets by user (delete all comments on the tickets first)
-		List<Ticket> tickets = ticketService.fetchTicketsByUser(username);
+		try {
+			tickets = ticketService.fetchTicketsByUser(username);
+		} catch (NoSuchElementException e) {
+			// tickets = new LinkedList<>();
+		}
 
 		if (!tickets.isEmpty()) {
 			List<Long> ids = new LinkedList<>();
@@ -63,10 +71,9 @@ public class DefaultUserService implements UserService {
 			}
 
 			for (Long id : ids) {
-				//delete comments belonging to id
+				// delete comments belonging to id
 				commentService.deleteAllCommentsInTicket(id);
-				
-				
+
 				ticketService.deleteTicket(id);
 			}
 
@@ -75,6 +82,8 @@ public class DefaultUserService implements UserService {
 		return userDao.deleteUser(username);
 
 	}
+
+	// ---------------------------------------------------------------
 
 	@Override
 	public User createAUser(String username) {

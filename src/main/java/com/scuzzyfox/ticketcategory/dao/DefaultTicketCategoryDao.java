@@ -22,11 +22,11 @@ public class DefaultTicketCategoryDao implements TicketCategoryDao {
 
 	@Autowired
 	NamedParameterJdbcTemplate jdbcTemplate;
-	
+
 	@Autowired
 	TicketDao ticketDao;
-	
-	@Autowired 
+
+	@Autowired
 	CategoryDao categoryDao;
 
 	@Override
@@ -36,12 +36,14 @@ public class DefaultTicketCategoryDao implements TicketCategoryDao {
 		if (!fetchTicketCategory(ticketId, categoryId).isEmpty()) {
 			throw new DuplicateKeyException("ticketId=" + ticketId + " already has categoryId=" + categoryId);
 		}
-		
-		//if ticket does not exist, throw error
-		ticketDao.fetchTicket(ticketId).orElseThrow(()-> new NoSuchElementException("could not find ticket=" + ticketId));
-		
-		//if category does not exist, throw error
-		Category cat = categoryDao.fetchCategory(categoryId).orElseThrow(()-> new NoSuchElementException("could not find category=" + categoryId));
+
+		// if ticket does not exist, throw error
+		ticketDao.fetchTicket(ticketId)
+				.orElseThrow(() -> new NoSuchElementException("could not find ticket=" + ticketId));
+
+		// if category does not exist, throw error
+		Category cat = categoryDao.fetchCategory(categoryId)
+				.orElseThrow(() -> new NoSuchElementException("could not find category=" + categoryId));
 
 		// sql
 		String sql = "INSERT INTO tickets_categories (ticket_fk, category_fk) VALUES (:ticketId, :categoryId)";
@@ -56,7 +58,8 @@ public class DefaultTicketCategoryDao implements TicketCategoryDao {
 		jdbcTemplate.update(sql, params);
 
 		// fetch category
-		//cat = categoryDao.fetchCategory(categoryId).orElseThrow(()-> new NoSuchElementException("could not find category=" + categoryId));
+		// cat = categoryDao.fetchCategory(categoryId).orElseThrow(()-> new
+		// NoSuchElementException("could not find category=" + categoryId));
 
 		// return category
 
@@ -87,6 +90,25 @@ public class DefaultTicketCategoryDao implements TicketCategoryDao {
 
 		});
 
+	}
+
+	@Override
+	public List<Long> fetchTicketIdsByCategory(Long categoryId) {
+		String sql = "SELECT * FROM tickets_categories WHERE category_fk = :categoryId";
+		Map<String, Object> params = new HashMap<>();
+		params.put("categoryId", categoryId);
+		
+		
+
+		return jdbcTemplate.query(sql, params, new RowMapper<>() {
+
+			@Override
+			public Long mapRow(ResultSet rs, int rowNum) throws SQLException {
+				// TODO Auto-generated method stub
+				return rs.getLong("ticket_fk");
+			}
+			
+		});
 	}
 
 }

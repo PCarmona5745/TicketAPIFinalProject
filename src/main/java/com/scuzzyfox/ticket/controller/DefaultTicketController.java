@@ -65,4 +65,10 @@ public class DefaultTicketController implements TicketController {
 		return commentService.fetchCommentsOnTicket(ticketId);
 	}
 
+	@Override
+	public List<Ticket> fetchTicketsByCategory(String categoryName) {
+		
+		return ticketService.fetchTicketsByCategory(categoryName);
+	}
+
 }

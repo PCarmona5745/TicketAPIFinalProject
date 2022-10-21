@@ -3,6 +3,7 @@ package com.scuzzyfox.ticket.dao;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -163,13 +164,22 @@ public class DefaultTicketDao implements TicketDao {
 	public Ticket editStatus(Long ticketId, Status status) {
 		String sql = "UPDATE tickets SET status = :status WHERE ticket_id= :ticketId";
 		Map<String, Object> params = new HashMap<>();
-		System.out.println("trying to add enum "+status);
+		System.out.println("trying to add enum " + status);
 		params.put("status", status.toString().toUpperCase());
 		params.put("ticketId", ticketId);
-		
+
 		jdbcTemplate.update(sql, params);
-		
+
 		return fetchTicket(ticketId).get();
+	}
+
+	@Override
+	public List<Ticket> fetchTicketsByIdList(List<Long> ticketIdList) {
+		List<Ticket> tickets = new LinkedList<>();
+		for (Long id : ticketIdList) {
+			tickets.add(fetchTicket(id).get());
+		}
+		return tickets;
 	}
 
 }
